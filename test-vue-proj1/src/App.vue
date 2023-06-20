@@ -82,5 +82,11 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
+
+  h1{
+    font-style: normal;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+  }
 }
 </style>
