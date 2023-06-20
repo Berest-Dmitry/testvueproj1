@@ -1,11 +1,25 @@
 <script setup>
     import {ref, reactive} from 'vue'
+    import VueDatePicker from '@vuepic/vue-datepicker';
+    import '@vuepic/vue-datepicker/dist/main.css'
     //#region reactive fields
         var firstName = ref('');
         var lastName = ref('');
         var selectedRegion = ref('');
         var selectedGender = ref('');
+        var dateOfBirth = ref();
     //#endregion
+
+    //#region props
+    const format = (date) => {
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        return `${day}.${month}.${year}`;
+    }
+     //#endregion
+
 </script>
 
 <template>
@@ -44,6 +58,10 @@
                     <option>Chupacabra</option>
                 </select>
             </div>
+        </div>
+        <div class="row col-6 mt-4">
+            <Label for="BirthDate"> Birth date:</Label>
+            <VueDatePicker id="BirthDate" v-model="dateOfBirth" :format="format"></VueDatePicker>
         </div>
     </div>
 </template>
