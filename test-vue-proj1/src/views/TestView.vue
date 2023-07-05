@@ -2,6 +2,7 @@
     import {ref, reactive} from 'vue'
     import VueDatePicker from '@vuepic/vue-datepicker';
     import '@vuepic/vue-datepicker/dist/main.css'
+    import HobbyItem from '/src/components/Hobbies.vue'
     //#region reactive fields
         var firstName = ref('');
         var lastName = ref('');
@@ -18,6 +19,11 @@
 
         return `${day}.${month}.${year}`;
     }
+    var hobbiesList = ref([
+        {id: 0, number: 1, text: "Swimming"},
+        {id: 1, number: 2, text: "Skateboarding"},
+        {id: 2, number: 3, text: "Singing"}
+    ])
      //#endregion
 
 </script>
@@ -59,10 +65,21 @@
                 </select>
             </div>
         </div>
-        <div class="row col-6 mt-4">
-            <Label for="BirthDate"> Birth date:</Label>
-            <VueDatePicker id="BirthDate" v-model="dateOfBirth" :format="format"></VueDatePicker>
+        <div class="row">
+            <div class=" col-6 mt-4">
+                <Label for="BirthDate"> Birth date:</Label>
+                <VueDatePicker id="BirthDate" v-model="dateOfBirth" :format="format"></VueDatePicker>
+            </div>
+            <div class=" col-6 mt-4">
+                <HobbyItem
+                    v-for="item in hobbiesList"
+                    :hobby="item"
+                    :key="item.id"
+                    >
+                </HobbyItem>
+            </div>
         </div>
+        
     </div>
 </template>
 
