@@ -71,12 +71,16 @@
                 <VueDatePicker id="BirthDate" v-model="dateOfBirth" :format="format"></VueDatePicker>
             </div>
             <div class=" col-6 mt-4">
-                <HobbyItem
-                    v-for="item in hobbiesList"
-                    :hobby="item"
-                    :key="item.id"
+                <label for="hobbies-list" style="text-decoration:underline;"> My interests: </label>
+                <ul id="hobbies-list">
+                    <HobbyItem
+                        v-for="item in hobbiesList"
+                        :hobby="item"
+                        :key="item.id"
                     >
-                </HobbyItem>
+                    </HobbyItem>
+                </ul>
+                
             </div>
         </div>
         
