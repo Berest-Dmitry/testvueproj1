@@ -1,5 +1,6 @@
 <script setup>
   import {ref, reactive} from 'vue'
+  import TodoItem from '/src/components/TodoItem.vue'
     const WelcomeMsg = ref('Hello from test project!');
     const UserMsg = ref('');
     const LastMsg = ref('');
@@ -11,6 +12,7 @@
       "green",
       "blue"
     ]
+    const todoItems = ref([]);
     
 
     function submit(){
@@ -38,6 +40,23 @@
     function getRndInteger(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+
+    //#region RequestMethods
+    async function LoadTodos(){
+      var result_get = await fetch('https://localhost:7175/api/TodoItems', {
+        method: 'GET', 
+        headers: {
+            "Content-Type": "text/plain"
+        },
+      });
+
+      var data = await result_get.json();
+      data.array.forEach(element => {
+        todoItems.push(element);
+      });
+    }
+
+    //#endregion
 </script>
 
 <template>
@@ -56,6 +75,21 @@
     </div>
     <div class="row">
       <span class="vue-span" :class="colorClass" :title="ideasCount" @click="pickColor()">Your thoughts: {{LastMsg}}</span>
+    </div>
+    <div class="row mt-5">
+        <div class="col-8">
+            <ul id="PlansList">
+              <TodoItem
+                v-for="item in todoItems"
+                :todo="item"
+                :key="item.id"
+              >                
+              </TodoItem>
+            </ul>
+        </div>
+        <div class="col-4">
+            <button id="loadbtn" @click="LoadTodos">Load Items</button>
+        </div>
     </div>
   </div>
   
