@@ -51,8 +51,9 @@
       });
 
       var data = await result_get.json();
-      data.array.forEach(element => {
-        todoItems.push(element);
+      todoItems.value = [];
+      data.forEach(element => {
+        todoItems.value.push(element);
       });
     }
 
