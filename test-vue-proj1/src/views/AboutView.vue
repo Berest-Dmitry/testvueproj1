@@ -77,7 +77,7 @@
     <div class="row">
       <span class="vue-span" :class="colorClass" :title="ideasCount" @click="pickColor()">Your thoughts: {{LastMsg}}</span>
     </div>
-    <div class="row mt-5">
+    <div class="row mt-2 todo-container">
         <div class="col-8">
             <ul id="PlansList">
               <TodoItem
@@ -88,8 +88,8 @@
               </TodoItem>
             </ul>
         </div>
-        <div class="col-4">
-            <button id="loadbtn" @click="LoadTodos">Load Items</button>
+        <div class="col-4" style="display:flex; justify-content:flex-end;">
+            <button id="loadbtn" style="max-height: 30px;" @click="LoadTodos">Load Items</button>
         </div>
     </div>
   </div>
@@ -127,6 +127,13 @@
     font-family: 'Times New Roman', Times, serif;
     background-color: cadetblue;
   }
+
+  .todo-container{
+    /*align-items: flex-end;*/
+    padding: 5px;
+    border: 2px solid black;
+  }
+
   .red{
     color: red;
   }
