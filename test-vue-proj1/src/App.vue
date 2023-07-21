@@ -19,6 +19,7 @@ import HelloWorld from './components/HelloWorld.vue'
   </header>
 
   <RouterView />
+  <DialogsWrapper />
 </template>
 
 <style scoped>
