@@ -1,10 +1,29 @@
 <script setup lang="ts">
+import {ref, reactive} from 'vue'
  //import { defineProps, defineEmits } from 'vue'
 
     const props = defineProps({
         question: String
     });
     const emit = defineEmits(['confirm', 'cancel'])
+    var todoText = ref('')
+
+    async function CreateTodo(){
+        var result_create = await fetch('https://localhost:7175/api/TodoItems/PostWithText?todo=' + todoText.value, {
+            method: "POST",
+            headers:{
+                'Accept': 'text/plain',
+                'Content-Type': 'text/plain'
+            },
+            //body: JSON.stringify(todoText.value),
+        });
+        var res = await result_create.json();
+        if(!res || !res.id){
+            alert("An error occured while adding todo!");
+            return;
+        }
+        emit('confirm');
+    }
 </script>
 
 <template>
@@ -13,8 +32,11 @@
             <div class="modal-body">
               <span class="modal-close" @click="emit('cancel')">🗙</span>
               <h2>{{ question }}</h2>
+              <div class="row">
+                    <input type="text" id="todoTextInput" v-model="todoText" placeholder="what do you want to do?"/>
+              </div>
               <div class="modal-action">
-                <button class="modal-button" @click="emit('confirm')">Confirm</button>
+                <button class="modal-button" @click="CreateTodo">Confirm</button>
                 <button class="modal-button" @click="emit('cancel')">Cancel</button>
               </div>
             </div>
@@ -42,6 +64,7 @@
     text-align: center;
     padding: 20px 40px;
     min-width: 250px;
+    max-width: 500px;
     display: flex;
     flex-direction: column;
   }
