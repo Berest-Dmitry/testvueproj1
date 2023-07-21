@@ -15,7 +15,6 @@ import {ref, reactive} from 'vue'
                 'Accept': 'text/plain',
                 'Content-Type': 'text/plain'
             },
-            //body: JSON.stringify(todoText.value),
         });
         var res = await result_create.json();
         if(!res || !res.id){

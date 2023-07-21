@@ -53,8 +53,11 @@
     ]
     const todoItems = ref([]);
     
-    const { reveal } = createConfirmDialog(AddTodoItem, { question: "Do you want to add todo?" })
+    const { reveal, onConfirm } = createConfirmDialog(AddTodoItem, { question: "Do you want to add todo?" })
 
+    onConfirm(async () => {
+      await LoadTodos(); 
+    })
 
     function submit(){
       alert("You've written: " + UserMsg.value);
