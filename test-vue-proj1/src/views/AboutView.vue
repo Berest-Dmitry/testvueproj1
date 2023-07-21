@@ -23,6 +23,7 @@
                 v-for="item in todoItems"
                 :todo="item"
                 :key="item.id"
+                @item-removed="onItemRemoved"
               >                
               </TodoItem>
             </ul>
@@ -53,11 +54,13 @@
     ]
     const todoItems = ref([]);
     
-    const { reveal, onConfirm } = createConfirmDialog(AddTodoItem, { question: "Do you want to add todo?" })
+    const { reveal, onConfirm, onCancel } = createConfirmDialog(AddTodoItem, { question: "Do you want to add todo?" })
 
     onConfirm(async () => {
       await LoadTodos(); 
     })
+
+    onCancel(() => alert("The action was aborted"))
 
     function submit(){
       alert("You've written: " + UserMsg.value);
@@ -99,6 +102,10 @@
       data.forEach(element => {
         todoItems.value.push(element);
       });
+    }
+
+    async function onItemRemoved(){
+      await LoadTodos();
     }
 
     //#endregion

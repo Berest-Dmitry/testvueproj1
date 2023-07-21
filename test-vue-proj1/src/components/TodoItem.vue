@@ -2,6 +2,21 @@
     const props = defineProps({
         todo: Object
     });
+    const emit = defineEmits(['itemRemoved']);
+
+    const todoId = props.todo?.id;
+    async function RemoveTodo(){
+        await fetch('https://localhost:7175/api/TodoItems/' + todoId, { method: "DELETE"})
+        .then((res) => {
+            if(!res){
+                alert("An error occured while removing element");
+            }
+            else{
+                emit("itemRemoved");
+            }
+        })
+
+    }
 </script>
 
 <template>
@@ -9,7 +24,7 @@
         <div class="row list-item">
             <span class="hobbyItem col-2"><check-bold/>{{ todo?.id }}</span>
             <span class="col-8">{{ todo?.name }} </span>
-            <button class="col-2" id="removeTodo"><trash-can class="trash-can-big" /></button>
+            <button class="col-2" id="removeTodo" @click="RemoveTodo"><trash-can class="trash-can-big" /></button>
         </div>
     </li>
 </template>
