@@ -1,5 +1,5 @@
 <script setup>
-    import {ref, reactive} from 'vue'
+    import {ref, reactive, onMounted} from 'vue'
     import VueDatePicker from '@vuepic/vue-datepicker';
     import '@vuepic/vue-datepicker/dist/main.css'
     import HobbyItem from '/src/components/Hobbies.vue'
@@ -26,6 +26,58 @@
     ])
      //#endregion
 
+    //#region methods
+    async function SaveUserData(){
+        var userData = {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            region: selectedRegion.value,
+            gender: selectedGender.value,
+            dateOfBirth: dateOfBirth.value
+        };
+
+        await fetch('https://localhost:7175/api/UserDatas', {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json;charset:utf-8;"
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(async (response) => {
+            if(!response || !response.ok){
+                alert("An error occured while updating user entry!");
+            }
+            var data = await response.json();
+        })
+    }
+    //#endregion
+
+    //#region lifecycle hooks
+    onMounted(async () => {
+        await fetch('https://localhost:7175/api/UserDatas/GetExistingUser', {
+            method: "GET" ,
+            headers: {
+            "Content-Type": "text/plain"
+            },
+        })
+        .then(async (response) => {
+            if(response && response.ok){
+                var data = await response.json()
+                if(data){
+                firstName.value = data.firstName;
+                lastName.value = data.lastName;
+                selectedRegion.value = data.region;
+                selectedGender.value = data.gender;
+                dateOfBirth.value = data.dateOfBirth;
+                }
+            }
+            else{
+                alert("An error occured while loading user data: " + response.status);
+            }
+        })
+       
+    });
+    //#endregion
 </script>
 
 <template>
@@ -69,6 +121,7 @@
             <div class=" col-6 mt-4">
                 <Label for="BirthDate"> Birth date:</Label>
                 <VueDatePicker id="BirthDate" v-model="dateOfBirth" :format="format"></VueDatePicker>
+                <button id="SaveData" @click="SaveUserData()" class="mt-3">Send data to server</button>
             </div>
             <div class=" col-6 mt-4">
                 <label for="hobbies-list" style="text-decoration:underline;"> My interests: </label>
