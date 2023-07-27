@@ -103,7 +103,6 @@
                     <option>Russia</option>
                     <option>Belarus</option>
                     <option>Kazakhstan</option>
-                    <option>Ukraine</option>
                     <option>China</option>
                     <option>Turkey</option>
                 </select>
@@ -112,8 +111,7 @@
                 <select class="select-input" v-model="selectedGender">
                     <option disabled>Please, select your gender</option>
                     <option>Male</option>
-                    <option>Female</option>
-                    <option>Chupacabra</option>
+                    <option>Female</option>                  
                 </select>
             </div>
         </div>
