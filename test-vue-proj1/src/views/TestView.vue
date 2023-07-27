@@ -1,8 +1,10 @@
 <script setup>
     import {ref, reactive, onMounted} from 'vue'
     import VueDatePicker from '@vuepic/vue-datepicker';
-    import '@vuepic/vue-datepicker/dist/main.css'
-    import HobbyItem from '/src/components/Hobbies.vue'
+    import '@vuepic/vue-datepicker/dist/main.css';
+    import HobbyItem from '/src/components/Hobbies.vue';
+    import settings from '/src/requestSettings.js';
+   
     //#region reactive fields
         var firstName = ref('');
         var lastName = ref('');
@@ -36,31 +38,29 @@
             dateOfBirth: dateOfBirth.value
         };
 
-        await fetch('https://localhost:7175/api/UserDatas', {
-            method: "POST",
-            headers: {
+        var body = JSON.stringify(userData);
+        var url = settings.defaultSiteUrl + '/api/UserDatas';
+        var headers = {
             "Content-Type": "application/json;charset:utf-8;"
-            },
-            body: JSON.stringify(userData)
-        })
-        .then(async (response) => {
+        }
+        var callbackMethod = async (response) => {
             if(!response || !response.ok){
                 alert("An error occured while updating user entry!");
             }
             var data = await response.json();
-        })
+        }
+        await settings.postMethodAsync(url, headers, body, callbackMethod);
+        
     }
     //#endregion
 
     //#region lifecycle hooks
     onMounted(async () => {
-        await fetch('https://localhost:7175/api/UserDatas/GetExistingUser', {
-            method: "GET" ,
-            headers: {
+        var url = settings.defaultSiteUrl + '/api/UserDatas/GetExistingUser';
+        var headers = {
             "Content-Type": "text/plain"
-            },
-        })
-        .then(async (response) => {
+        }
+        var callbackMethod = async (response) => {
             if(response && response.ok){
                 var data = await response.json()
                 if(data){
@@ -74,7 +74,8 @@
             else{
                 alert("An error occured while loading user data: " + response.status);
             }
-        })
+        }
+        await settings.getMethodAsync(url, headers, callbackMethod);       
        
     });
     //#endregion
