@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {ref, reactive} from 'vue'
+import settings from '/src/requestSettings.js';
  //import { defineProps, defineEmits } from 'vue'
 
     const props = defineProps({
@@ -9,19 +10,21 @@ import {ref, reactive} from 'vue'
     var todoText = ref('')
 
     async function CreateTodo(){
-        var result_create = await fetch('https://localhost:7175/api/TodoItems/PostWithText?todo=' + todoText.value, {
-            method: "POST",
-            headers:{
-                'Accept': 'text/plain',
-                'Content-Type': 'text/plain'
-            },
-        });
-        var res = await result_create.json();
+      var url = settings.defaultSiteUrl + '/api/TodoItems/PostWithText?todo=' + todoText.value;
+      var headers = {
+        'Accept': 'text/plain',
+        'Content-Type': 'text/plain'
+      }
+      var callback = async (response: any) => {
+        var res = await response.json();
         if(!res || !res.id){
-            alert("An error occured while adding todo!");
-            return;
+          alert("An error occured while adding todo!");
+          return;
         }
         emit('confirm');
+      }
+      await settings.postMethodAsync(url, headers, null, callback);
+
     }
 </script>
 

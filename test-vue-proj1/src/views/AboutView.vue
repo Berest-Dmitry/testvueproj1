@@ -41,6 +41,7 @@
   import TodoItem from '/src/components/TodoItem.vue'
   import AddTodoItem from '/src/components/AddTodoItem.vue'
   import { createConfirmDialog } from 'vuejs-confirm-dialog'
+  import settings from '/src/requestSettings.js'
     const WelcomeMsg = ref('Hello from test project!');
     const UserMsg = ref('');
     const LastMsg = ref('');
@@ -90,18 +91,19 @@
 
     //#region RequestMethods
     async function LoadTodos(){
-      var result_get = await fetch('https://localhost:7175/api/TodoItems', {
-        method: 'GET', 
-        headers: {
-            "Content-Type": "text/plain"
-        },
-      });
+      var url = settings.defaultSiteUrl + '/api/TodoItems';
+      var headers = {
+        "Content-Type": "text/plain"
+      }
+      var callback = async (response) =>{
+        var data = await response.json();
+        todoItems.value = [];
+        data.forEach(element => {
+          todoItems.value.push(element);
+        });
+      }
+      await settings.getMethodAsync(url, headers, callback);
 
-      var data = await result_get.json();
-      todoItems.value = [];
-      data.forEach(element => {
-        todoItems.value.push(element);
-      });
     }
 
     async function onItemRemoved(){
