@@ -97,9 +97,17 @@
       }
       var callback = async (response) =>{
         var data = await response.json();
+        var count = 0;
         todoItems.value = [];
-        data.forEach(element => {
-          todoItems.value.push(element);
+        data.entity.forEach(element => {
+          count++;
+          //todoItems.value.push(element);
+          todoItems.value.push({
+            id: element.id,
+            name: element.name,
+            isComplete: element.isComplete,
+            number: count
+          });
         });
       }
       await settings.getMethodAsync(url, headers, callback);

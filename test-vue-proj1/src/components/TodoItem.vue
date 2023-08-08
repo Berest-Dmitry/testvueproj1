@@ -22,7 +22,7 @@
 <template>
     <li class="todo-item">
         <div class="row list-item">
-            <span class="hobbyItem col-2"><check-bold/>{{ todo?.id }}</span>
+            <span class="hobbyItem col-2" v-bind:id="todo?.id"><check-bold/>{{ todo?.number }}</span>
             <span class="col-8">{{ todo?.name }} </span>
             <button class="col-2" id="removeTodo" @click="RemoveTodo"><trash-can class="trash-can-big" /></button>
         </div>
