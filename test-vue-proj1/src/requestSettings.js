@@ -15,6 +15,13 @@ export default{
                 body: body
             })
             .then(async (response) => await callback(response));
+        },
+        deleteMethodAsync: async function(url, headers, callback){
+            await fetch(url, {
+                method: "DELETE",
+                headers: headers
+            })
+            .then(async (response) => await callback(response));
         }
    // }
 }
