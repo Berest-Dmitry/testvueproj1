@@ -28,7 +28,7 @@
 <template>
     <div class="modal-container">
         <div class="modal-container">
-            <div class="modal-body">
+            <div class="modal-body remove-modal">
               <span class="modal-close" @click="emit('cancel')">🗙</span>
               <h2>{{ question }}</h2>
               
@@ -91,5 +91,9 @@
   .btn-danger{
     background-color: #c01313 !important;
     border-color: black;
+  }
+
+  .remove-modal{
+    z-index: 2;
   }
 </style>

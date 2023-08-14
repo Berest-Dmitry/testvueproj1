@@ -65,7 +65,6 @@
 
     function submit(){
       alert("You've written: " + UserMsg.value);
-      // UserMsg.value = '';
     }
 
     function SaveLastMessage(){

@@ -1,80 +1,28 @@
-<script setup>
+<script setup lang="ts">
     //#region imports
     import {ref, reactive, onMounted} from 'vue';
     import settings from '/src/requestSettings.js';
     import { createConfirmDialog } from 'vuejs-confirm-dialog';
-    import RemoveUser from '/src/components/RemoveUser.vue'
-    import AmhVueTable from "am_table_vue";
+    import RemoveUser from '/src/components/RemoveUser.vue';
+    import type { Header, Item} from "vue3-easy-data-table";
+    //import AmhVueTable from "am_table_vue";
     // import css
-    import "am_table_vue/dist/style.css";
+    //import "am_table_vue/dist/style.css";
     //#endregion
 
     //#region reactive fields
-    const state = reactive({
-         data: [
-          
-         ],
-         columns: [
-            {
-                title: "id",
-                field: "id",
-                EnableFilter: false,
-                sortable: false,
-                hidden: true,
-                Cssclass: "user-id-span"
-            },
-            {
-                title: "#",
-                field: "number",
-                EnableFilter: false,
-                sortable: false,
-            },
-            {
-                title: "First name",
-                field: "firstName",
-                EnableFilter: false,
-                sortable: true,
-            },
-            {
-                title: "Last name",
-                field: "lastName",
-                EnableFilter: false,
-                sortable: true,
-            },
-            {
-                title: "Gender",
-                field: "gender",
-                EnableFilter: false,
-                sortable: false,
-            },
-            {
-                title: "Country",
-                field: "region",
-                EnableFilter: false,
-                sortable: true,
-            },
-            {
-                 title: "Remove",
-                 isHtml: true,
-                 EnableFilter: false,
-            },
-        ],
-         config: {
-           EnableSearch: true,
-           searchplaceholder: "Search in Table",
-           EnableUseDarkMode: true,
-           EnableCardsTemp: true,
-           SearchInFields: ["name", "age", "date"],
-           EnablePagination: true,
-           PaginationConfig: {
-             itemsPerPage: 20,
-             CurrentPage: 2,
-           },
-         },
-   });
     //#endregion
 
     //#region fields
+    const headers: Header[] = [
+        { text: "#", value: "number" },
+        { text: "First name", value: "firstName"},
+        { text: "Last name", value: "lastName"},
+        { text: "Gender", value: "gender"},
+        { text: "Country", value: "region"},
+        {text: "Remove", value: "id"}        
+    ];
+    const items = ref<Item[]>([]);
     const _userId = ref('');
     //#endregion
 
@@ -87,10 +35,11 @@
 
     }
 
-    function ConfirmRemoveUser(ev){
+    function ConfirmRemoveUser(ev: any){
         var btn = ev.currentTarget.parentNode;
         var row = btn.closest('tr');
-        _userId.value = row.querySelector('.user-id-span').textContent;
+        // _userId.value = row.querySelector('.user-id-span').textContent;
+        _userId.value = row.firstElementChild.firstElementChild.getAttribute('item-id')
         reveal();
     }
 
@@ -99,24 +48,22 @@
         var headers = {
         "Content-Type": "text/plain"
         }
-        var callback = async (response) => {
+        var callback = async (response: any) => {
             if(response && response.ok){
-                state.data = [];
-                var data = await response.json();
                 var count = 0;
-                data.forEach(user => {
+                var data = await response.json();
+                items.value = [];
+                data.forEach((user: any) => {
                     count++;
-                    state.data.push({
+                    items.value.push({
                         id: user.id,
                         number: count,
                         firstName: user.firstName,
                         lastName: user.lastName,
                         gender: user.gender,
                         region: user.region
-                    });
+                    })
                 });
-                var nextBtn = document.querySelectorAll('[rel="next"]');
-                nextBtn[0].click();
             }
             else{
                 alert("An error occured while loading user data: " + response.status);
@@ -147,7 +94,20 @@
                 <button @click="addUser()" class="col-2">Add User</button>
             </div>
             <div class="row table-container">
-                <AmhVueTable
+                <EasyDataTable              
+                    :headers="headers"
+                    :items="items"
+                    >
+                    <template #item-number="item">
+                        <span :item-id="item?.id">{{ item.number }}</span>
+                    </template>
+                    <template #item-id="item">
+                        <div>
+                            <button @click="ConfirmRemoveUser" class="remove-btn"><trash-can class="trash-can-big" /></button>
+                        </div>
+                    </template>
+                </EasyDataTable>
+                <!-- <AmhVueTable
                       :data="state.data"
                       :columns="state.columns"
                       :config="state.config"
@@ -157,7 +117,7 @@
                       <button @click="ConfirmRemoveUser" class="remove-btn"><trash-can class="trash-can-big" /></button>
                     </div>
                 </template>
-                </AmhVueTable>
+                </AmhVueTable> -->
             </div>
         </div>
     </div>
