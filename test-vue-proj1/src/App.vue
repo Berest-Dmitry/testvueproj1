@@ -20,6 +20,7 @@ import HelloWorld from './components/HelloWorld.vue'
 
   <RouterView />
   <DialogsWrapper />
+  <ModalTarget/>
 </template>
 
 <style scoped>

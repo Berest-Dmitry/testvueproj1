@@ -2,15 +2,15 @@
     //#region imports
     import {ref, reactive, onMounted} from 'vue';
     import settings from '/src/requestSettings.js';
+    import {openModal} from '@kolirt/vue-modal';
     import { createConfirmDialog } from 'vuejs-confirm-dialog';
     import RemoveUser from '/src/components/RemoveUser.vue';
+    import AddUserModal from '@/components/AddUserModal.vue';
     import type { Header, Item} from "vue3-easy-data-table";
-    //import AmhVueTable from "am_table_vue";
-    // import css
-    //import "am_table_vue/dist/style.css";
     //#endregion
 
     //#region reactive fields
+    const _saveRes = ref(false);
     //#endregion
 
     //#region fields
@@ -31,8 +31,14 @@
     //#endregion
 
     //#region methods
-    function addUser(){
-
+    async function addUser(){
+        openModal(AddUserModal, {additionalInfo: null})
+        .then(async (data) => {
+            await loadUsers();
+        })
+        .catch((err) => {
+            console.log('An error occured while creating user entry:' + err);
+        });
     }
 
     function ConfirmRemoveUser(ev: any){
@@ -78,11 +84,17 @@
         userId: _userId
     })
 
+    //#region event listeners
     onConfirm(async () => {
         await loadUsers();
     });
 
     onCancel(() => alert("The action was aborted"));
+
+    async function onPostFail(){
+        console.log('An error occured while adding a user!');
+    }
+    //#endregion
 </script>
 
 <template>
@@ -107,17 +119,6 @@
                         </div>
                     </template>
                 </EasyDataTable>
-                <!-- <AmhVueTable
-                      :data="state.data"
-                      :columns="state.columns"
-                      :config="state.config"
-                >
-                <template v-slot="{ column, row }">
-                    <div v-if="column.title == 'Remove'">
-                      <button @click="ConfirmRemoveUser" class="remove-btn"><trash-can class="trash-can-big" /></button>
-                    </div>
-                </template>
-                </AmhVueTable> -->
             </div>
         </div>
     </div>
