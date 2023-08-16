@@ -41,7 +41,7 @@
   import TodoItem from '/src/components/TodoItem.vue'
   import AddTodoItem from '/src/components/AddTodoItem.vue'
   import { createConfirmDialog } from 'vuejs-confirm-dialog'
-  import settings from '/src/requestSettings.js'
+  import settings from '/src/requestSettings.ts'
     const WelcomeMsg = ref('Hello from test project!');
     const UserMsg = ref('');
     const LastMsg = ref('');

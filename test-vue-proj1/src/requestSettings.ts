@@ -1,14 +1,14 @@
 export default{
     //requestSettings: {
         defaultSiteUrl: 'https://localhost:7175',
-        getMethodAsync: async function(url, headers, callback){
+        getMethodAsync: async function(url: any, headers: any, callback: any){
             await fetch(url, {
                 method: "GET",
                 headers: headers
             })
             .then(async (response) => await callback(response));
         },
-        postMethodAsync: async function(url, headers, body, callback){
+        postMethodAsync: async function(url: any, headers: any, body: any, callback: any){
             await fetch(url, {
                 method: "Post",
                 headers: headers,
@@ -16,7 +16,7 @@ export default{
             })
             .then(async (response) => await callback(response));
         },
-        deleteMethodAsync: async function(url, headers, callback){
+        deleteMethodAsync: async function(url: any, headers: any, callback: any){
             await fetch(url, {
                 method: "DELETE",
                 headers: headers

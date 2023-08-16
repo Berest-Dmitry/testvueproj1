@@ -4,7 +4,7 @@
     import VueDatePicker from '@vuepic/vue-datepicker';
     import { notify } from "@kyvg/vue3-notification";
     import '@vuepic/vue-datepicker/dist/main.css';
-    import settings from '/src/requestSettings.js';
+    import settings from '@/requestSettings.js';
     const props = defineProps({
         additionalInfo: null
     });

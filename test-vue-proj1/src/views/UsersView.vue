@@ -1,12 +1,12 @@
 <script setup lang="ts">
     //#region imports
     import {ref, reactive, onMounted} from 'vue';
-    import settings from '/src/requestSettings.js';
-    import utilityFunctions from '/src/utils.js';
+    import settings from '@/requestSettings.js';
+    import utilityFunctions from '@/utils.js';
     import {openModal} from '@kolirt/vue-modal';
     import { createConfirmDialog } from 'vuejs-confirm-dialog';
     import { notify } from "@kyvg/vue3-notification";
-    import RemoveUser from '/src/components/RemoveUser.vue';
+    import RemoveUser from '@/components/RemoveUser.vue';
     import AddUserModal from '@/components/AddUserModal.vue';
     import type { Header, Item} from "vue3-easy-data-table";
     //#endregion

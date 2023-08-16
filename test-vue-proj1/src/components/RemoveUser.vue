@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
     import {ref, reactive} from 'vue'
-    import settings from '/src/requestSettings.js';
+    import settings from '@/requestSettings.js';
     import {notify} from "@kyvg/vue3-notification";
     const emit = defineEmits(['confirm', 'cancel']);
 
@@ -15,7 +15,7 @@
             'Accept': 'text/plain',
             'Content-Type': 'text/plain'
         };
-        var callback = async (response) => {
+        var callback = async (response: any) => {
             if(!response || !response.ok){
                 notify({
                     type: "error",
