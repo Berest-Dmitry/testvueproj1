@@ -13,6 +13,7 @@ import 'vue-material-design-icons/styles.css';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 import {createModal} from '@kolirt/vue-modal';
+import Notifications from '@kyvg/vue3-notification';
 
 import TrashCanIcon from 'vue-material-design-icons/TrashCan.vue';
 import CheckBoldIcon from 'vue-material-design-icons/CheckBold.vue';
@@ -32,6 +33,7 @@ app.use(createModal({
         'background-color': 'rgba(0,0,0,.3)'
     }
 }))
+app.use(Notifications)
 
 app.component('VueDatePicker', VueDatePicker);
 app.component('trash-can', TrashCanIcon);

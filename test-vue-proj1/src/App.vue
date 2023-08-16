@@ -21,6 +21,7 @@ import HelloWorld from './components/HelloWorld.vue'
   <RouterView />
   <DialogsWrapper />
   <ModalTarget/>
+  <notifications position="bottom right"/>
 </template>
 
 <style scoped>

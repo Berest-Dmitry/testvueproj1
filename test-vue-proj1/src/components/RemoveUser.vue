@@ -1,6 +1,7 @@
 <script setup>
     import {ref, reactive} from 'vue'
     import settings from '/src/requestSettings.js';
+    import {notify} from "@kyvg/vue3-notification";
     const emit = defineEmits(['confirm', 'cancel']);
 
     const props = defineProps({
@@ -16,7 +17,11 @@
         };
         var callback = async (response) => {
             if(!response || !response.ok){
-              alert("An error occured while removing user!");
+                notify({
+                    type: "error",
+                    title: "Server error",
+                    text: "An error occured while removing user: " + response.status
+                });
               return;
             }
             emit('confirm');

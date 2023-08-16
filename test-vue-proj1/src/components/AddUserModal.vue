@@ -2,13 +2,14 @@
     import {ModalTarget, closeModal, confirmModal} from '@kolirt/vue-modal';
     import {ref, reactive} from 'vue';
     import VueDatePicker from '@vuepic/vue-datepicker';
+    import { notify } from "@kyvg/vue3-notification";
     import '@vuepic/vue-datepicker/dist/main.css';
     import settings from '/src/requestSettings.js';
     const props = defineProps({
         additionalInfo: null
     });
 
-    const emit = defineEmits(['postSuccess', 'postFail']);
+    //const emit = defineEmits(['postSuccess', 'postFail']);
 
     var userInfo = reactive({
         firstName: null,
@@ -26,11 +27,30 @@
         var body = JSON.stringify(userInfo);
         var callback = async (response: any) => {
             if(!response || !response.ok){
-               emit('postFail');
+                notify({
+                    type: "error",
+                    title: "Server error",
+                    text: "An error occured while posting user data: " + response.status
+                });
+               closeModal();
             }
             else{
-                emit('postSuccess');
-                confirmModal();
+                var data = await response.json();
+                if(data && data.result){
+                    confirmModal();
+                    notify({
+                        type: 'success',
+                        title: "User added",
+                        text: "Successfully added new user!"
+                    });
+                }
+                else{
+                    notify({
+                        type: "error",
+                        title: "Server error",
+                        text: "An error occured while posting user data: " + data.errorInfo
+                    });
+                }
             }
         }
         await settings.postMethodAsync(url, headers, body, callback);

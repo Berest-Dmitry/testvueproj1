@@ -2,8 +2,10 @@
     //#region imports
     import {ref, reactive, onMounted} from 'vue';
     import settings from '/src/requestSettings.js';
+    import utilityFunctions from '/src/utils.js';
     import {openModal} from '@kolirt/vue-modal';
     import { createConfirmDialog } from 'vuejs-confirm-dialog';
+    import { notify } from "@kyvg/vue3-notification";
     import RemoveUser from '/src/components/RemoveUser.vue';
     import AddUserModal from '@/components/AddUserModal.vue';
     import type { Header, Item} from "vue3-easy-data-table";
@@ -20,6 +22,7 @@
         { text: "Last name", value: "lastName"},
         { text: "Gender", value: "gender"},
         { text: "Country", value: "region"},
+        { text: "Birth date", value: "dateOfBirth"},
         {text: "Remove", value: "id"}        
     ];
     const items = ref<Item[]>([]);
@@ -58,21 +61,42 @@
             if(response && response.ok){
                 var count = 0;
                 var data = await response.json();
-                items.value = [];
-                data.forEach((user: any) => {
-                    count++;
-                    items.value.push({
-                        id: user.id,
-                        number: count,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        gender: user.gender,
-                        region: user.region
-                    })
-                });
+                if(data && data.result){
+                    items.value = [];
+                    data.entity.forEach((user: any) => {
+                        count++;
+                        items.value.push({
+                            id: user.id,
+                            number: count,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            gender: user.gender,
+                            region: user.region,
+                            dateOfBirth: utilityFunctions.convertToDate(user.dateOfBirth)
+                        })
+                    });
+                    notify({
+                        type: "success",
+                        title: "Users loaded",
+                        text: "Successfully loaded users list from server"
+                    });
+                }
+                else {
+                    var data = await response.json();
+                     notify({
+                         type: "error",
+                         title: "Server error",
+                         text: "An error occured while loading user data: " + data.errorInfo
+                     });
+                }
             }
             else{
-                alert("An error occured while loading user data: " + response.status);
+                // alert("An error occured while loading user data: " + response.status);
+                notify({
+                    type: "error",
+                    title: "Server error",
+                    text: "An error occured while loading user data: " + response.status
+                });
             }
         }
         await settings.getMethodAsync(url, headers, callback);
@@ -89,11 +113,9 @@
         await loadUsers();
     });
 
-    onCancel(() => alert("The action was aborted"));
+    onCancel(() => notify("The action was aborted"));
 
-    async function onPostFail(){
-        console.log('An error occured while adding a user!');
-    }
+
     //#endregion
 </script>
 
