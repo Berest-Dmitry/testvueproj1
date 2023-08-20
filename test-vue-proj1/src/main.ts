@@ -17,6 +17,8 @@ import Notifications from '@kyvg/vue3-notification';
 
 import TrashCanIcon from 'vue-material-design-icons/TrashCan.vue';
 import CheckBoldIcon from 'vue-material-design-icons/CheckBold.vue';
+import CloseThickIcon from 'vue-material-design-icons/CloseThick.vue';
+import ShareIcon from 'vue-material-design-icons/Share.vue';
 
 
 const app = createApp(App)
@@ -38,6 +40,8 @@ app.use(Notifications)
 app.component('VueDatePicker', VueDatePicker);
 app.component('trash-can', TrashCanIcon);
 app.component('check-bold', CheckBoldIcon);
+app.component('close-thick', CloseThickIcon);
+app.component('redirect-link', ShareIcon);
 app.component('EasyDataTable', Vue3EasyDataTable);
 
 app.mount('#app')

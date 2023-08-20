@@ -9,10 +9,12 @@
     import RemoveUser from '@/components/RemoveUser.vue';
     import AddUserModal from '@/components/AddUserModal.vue';
     import type { Header, Item} from "vue3-easy-data-table";
+    import { useRouter } from 'vue-router';
     //#endregion
 
     //#region reactive fields
-    const _saveRes = ref(false);
+    const items = ref<Item[]>([]);
+    const _userId = ref('');
     //#endregion
 
     //#region fields
@@ -23,10 +25,10 @@
         { text: "Gender", value: "gender"},
         { text: "Country", value: "region"},
         { text: "Birth date", value: "dateOfBirth"},
-        {text: "Remove", value: "id"}        
+        {text: "Remove", value: "id"} ,
+        {text: "Link", value: "linkId"}       
     ];
-    const items = ref<Item[]>([]);
-    const _userId = ref('');
+    const router = useRouter();
     //#endregion
 
     //#region lifecycle hooks
@@ -67,6 +69,7 @@
                         count++;
                         items.value.push({
                             id: user.id,
+                            linkId: user.id,
                             number: count,
                             firstName: user.firstName,
                             lastName: user.lastName,
@@ -82,7 +85,6 @@
                     });
                 }
                 else {
-                    var data = await response.json();
                      notify({
                          type: "error",
                          title: "Server error",
@@ -115,7 +117,10 @@
 
     onCancel(() => notify("The action was aborted"));
 
-
+    function onLinkClicked(userId: any){
+        localStorage.setItem("userId", userId);
+        router.push({path: '/todos'});
+    }
     //#endregion
 </script>
 
@@ -123,9 +128,9 @@
     <div class="users-main">
         <h1 class="page-header">Users of the portal</h1>
         <div class="row">
-            <div>
-                <button @click="loadUsers()" class="col-2 mr-2">Load Users</button>
-                <button @click="addUser()" class="col-2">Add User</button>
+            <div class="btn-row">
+                <button @click="loadUsers()" class="col-2 btn btn-info" style="margin-right: 10px;">Load Users</button>
+                <button @click="addUser()" class="col-2 btn btn-success">Add User</button>
             </div>
             <div class="row table-container">
                 <EasyDataTable              
@@ -137,8 +142,11 @@
                     </template>
                     <template #item-id="item">
                         <div>
-                            <button @click="ConfirmRemoveUser" class="remove-btn"><trash-can class="trash-can-big" /></button>
+                            <button @click="ConfirmRemoveUser" class="remove-btn"><trash-can class="table-icon" /></button>
                         </div>
+                    </template>
+                    <template #item-linkId="item">
+                            <span ><redirect-link class="table-icon link-color" @click="onLinkClicked(item?.id)"/></span>
                     </template>
                 </EasyDataTable>
             </div>
@@ -156,12 +164,21 @@
       color: #333 !important;
     }
 }
-.trash-can-big{
+.table-icon{
     transform: scale(1.5);
 }
 .remove-btn{
     border-radius: 50%;
     background-color: brown;
     color: white;
+}
+.btn-row{
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 25px;
+}
+
+.link-color{
+    color: #0099CC;
 }
 </style>
