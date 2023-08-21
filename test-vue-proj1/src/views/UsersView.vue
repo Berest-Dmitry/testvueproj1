@@ -136,6 +136,7 @@
                 <EasyDataTable              
                     :headers="headers"
                     :items="items"
+                    alternating
                     >
                     <template #item-number="item">
                         <span :item-id="item?.id">{{ item.number }}</span>

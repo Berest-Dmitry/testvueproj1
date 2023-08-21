@@ -1,24 +1,30 @@
 <script setup lang="ts">
 import {ref, reactive} from 'vue'
-import settings from '/src/requestSettings.js';
+import settings from '@/requestSettings.js';
+import { notify } from "@kyvg/vue3-notification";
  //import { defineProps, defineEmits } from 'vue'
 
     const props = defineProps({
-        question: String
+        question: String,
+        userId: String
     });
     const emit = defineEmits(['confirm', 'cancel'])
     var todoText = ref('')
 
     async function CreateTodo(){
-      var url = settings.defaultSiteUrl + '/api/TodoItems/PostWithText?todo=' + todoText.value;
+      var url = settings.defaultSiteUrl + '/api/TodoItems/AddUserTodo?todo=' + todoText.value + '&userId=' + props.userId;
       var headers = {
         'Accept': 'text/plain',
         'Content-Type': 'text/plain'
       }
       var callback = async (response: any) => {
         var res = await response.json();
-        if(!res || !res.id){
-          alert("An error occured while adding todo!");
+        if(!res || !res.result){
+          notify({
+            type: 'error',
+            title: 'An error occurred while adding todo',
+            text: 'An error occurred while adding todo' + res.errorInfo
+          });
           return;
         }
         emit('confirm');
@@ -31,7 +37,7 @@ import settings from '/src/requestSettings.js';
 <template>
     <div class="modal-container">
         <div class="modal-container">
-            <div class="modal-body">
+            <div class="modal-body" style="z-index: 2;">
               <span class="modal-close" @click="emit('cancel')">🗙</span>
               <h2>{{ question }}</h2>
               <div class="row">
