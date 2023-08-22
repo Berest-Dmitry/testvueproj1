@@ -15,6 +15,8 @@
     //#region reactive fields
     const items = ref<Item[]>([]);
     const _userId = ref('');
+    const _userSearch = ref('');
+    const _searchField = ref('');
     //#endregion
 
     //#region fields
@@ -28,6 +30,9 @@
         {text: "Remove", value: "id"} ,
         {text: "Link", value: "linkId"}       
     ];
+
+    const searchFields: string[] = ['firstName', 'lastName', 'region']
+
     const router = useRouter();
     //#endregion
 
@@ -128,15 +133,34 @@
     <div class="users-main">
         <h1 class="page-header">Users of the portal</h1>
         <div class="row">
-            <div class="btn-row">
-                <button @click="loadUsers()" class="col-2 btn btn-info" style="margin-right: 10px;">Load Users</button>
-                <button @click="addUser()" class="col-2 btn btn-success">Add User</button>
+            <div class="row my-2">
+                <div class="col-8 row search-row">
+                    <div class="input-group py-2" style="max-width: 50%;">
+                          <input class="form-control input-group-prepend border-right-0 border" v-model="_userSearch" type="search">
+                          <span class="input-group-append">
+                                <div class="input-group-text bg-transparent" style="height: 100%;"><magnify class="table-icon"/></div>
+                            </span>
+                    </div>
+                    <div class="row col-6">
+                        <span class="col-auto">Search by: </span>
+                        <select class="form-select col-6" style="max-width: 50%;" v-model="_searchField">
+                            <option v-for="field in searchFields">{{ field }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-row col-4">
+                    <button @click="loadUsers()" class="col-5 btn btn-info" style="margin-right: 10px;">Load Users</button>
+                    <button @click="addUser()" class="col-5 btn btn-success">Add User</button>
+                </div>
             </div>
+            
             <div class="row table-container">
                 <EasyDataTable              
                     :headers="headers"
                     :items="items"
                     alternating
+                    :search-value="_userSearch"
+                    :search-field="_searchField"
                     >
                     <template #item-number="item">
                         <span :item-id="item?.id">{{ item.number }}</span>
@@ -177,6 +201,11 @@
     display: flex;
     justify-content: flex-end;
     padding-right: 25px;
+    max-height: 45px;
+}
+
+.search-row{
+    align-items: center;
 }
 
 .link-color{

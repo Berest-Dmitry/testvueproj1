@@ -25,6 +25,7 @@
         name: null,
         isComplete: null,
     });
+    const _todoSearch = ref('');
     //const _selectedRows = ref<Item[]>([]);
 
     const _disabledBtn = computed(() => {
@@ -234,14 +235,22 @@
         <h1 class="page-header"> List of todos </h1>
         <h2>{{ _pageHeader }}</h2>
         <div class="row">
-            <div class="row col-12">
-                <div class="col-6">
-                    <label for="usersSelect">List of all users</label>
-                    <select id="usersSelect" v-model="_userName" @change="usersSelectChange($event)" >
+            <div class="row mb-2">
+                <p>List of all users</p>
+                <select id="usersSelect" v-model="_userName" @change="usersSelectChange($event)" >
                         <option v-for="user in _users" :key="user?.id" :item-id="user?.id">
                             {{ user?.username }}
                         </option>
                 </select>
+            </div>
+            <div class="row col-12">
+                <div class="col-6">
+                    <div class="input-group col-md-4 py-2">
+                          <input class="form-control input-group-prepend border-right-0 border" v-model="_todoSearch" type="search">
+                          <span class="input-group-append">
+                                <div class="input-group-text bg-transparent" style="height: 100%;"><magnify class="table-icon"/></div>
+                            </span>
+                    </div>
                 </div>
                 <div class="col-6 btn-row">
                     <!-- <button class="btn btn-info">Load todos</button> -->
@@ -254,7 +263,8 @@
                 :headers="headers"
                 :items="items"
                 alternating  
-                @click-row="onRowClicked"             
+                @click-row="onRowClicked"
+                :search-value="_todoSearch"             
                 >
                     <template #item-id="item">
                         <input type="radio" :id="item?.id"/>
@@ -290,5 +300,10 @@
     display: flex;
     justify-content: flex-end;
     padding-left: 15px;
+    max-height: 45px;
+}
+
+#usersSelect{
+    max-width: 400px;
 }
 </style>

@@ -19,6 +19,7 @@ import TrashCanIcon from 'vue-material-design-icons/TrashCan.vue';
 import CheckBoldIcon from 'vue-material-design-icons/CheckBold.vue';
 import CloseThickIcon from 'vue-material-design-icons/CloseThick.vue';
 import ShareIcon from 'vue-material-design-icons/Share.vue';
+import SearchIcon from 'vue-material-design-icons/Magnify.vue';
 
 
 const app = createApp(App)
@@ -42,6 +43,7 @@ app.component('trash-can', TrashCanIcon);
 app.component('check-bold', CheckBoldIcon);
 app.component('close-thick', CloseThickIcon);
 app.component('redirect-link', ShareIcon);
+app.component('magnify', SearchIcon);
 app.component('EasyDataTable', Vue3EasyDataTable);
 
 app.mount('#app')
