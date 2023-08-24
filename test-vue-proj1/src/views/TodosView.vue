@@ -3,7 +3,7 @@
     import {ref, reactive, onMounted, computed} from 'vue';
     import settings from '@/requestSettings.js';
     import AddTodoItem from '@/components/AddTodoItem.vue';
-    import type { Header, Item, ClickRowArgument } from "vue3-easy-data-table";
+    import type { Header, Item, ClickRowArgument, BodyRowClassNameFunction } from "vue3-easy-data-table";
     import { createConfirmDialog } from 'vuejs-confirm-dialog';
     import { notify } from "@kyvg/vue3-notification";
     //#endregion
@@ -86,6 +86,26 @@
                 document.querySelector(`input[id="${item.id}"]`) 
                 ?? new HTMLInputElement;
             currentBtn.checked = true;
+        }
+
+        const onCellClicked = async (ev: any) => {
+            var cellElem = <HTMLTableCellElement> ev?.currentTarget;
+            if(cellElem.getElementsByClassName('check-bold-icon').length == 0){
+                var currDataInput = <HTMLElement> cellElem?.parentElement
+                ?.parentElement?.firstElementChild?.firstElementChild;
+                var todoId = currDataInput.getAttribute('id');
+                await CompleteTodo(todoId ?? '');  
+            }
+              
+        }
+
+        const onHideCompletedClicked = (ev: any) => {
+            var table = document.getElementsByClassName('vue3-easy-data-table__main')[0]?.firstElementChild;
+            var completedRows = table?.querySelectorAll('tr.completed-row');
+            completedRows?.forEach((row: Element) => {
+                var currRow = <HTMLElement> row;
+                currRow.hidden = !ev.currentTarget?.parentElement?.querySelector('input').checked;
+            })
         }
     //#endregion
 
@@ -226,6 +246,47 @@
             await settings.deleteMethodAsync(url, headers, callback);
         }
     }
+
+    async function CompleteTodo(todoId: string){
+        var url = settings.defaultSiteUrl + `/api/TodoItems/CompleteTodo?todoId=${todoId}`;
+        var headers = {
+            "Content-Type": "text/plain"
+        }
+        var callback = async (response: any) => {
+            if(response && response.ok){
+                var data = await response.json();
+                if(data && data.result){
+                        await ReloadTodos();
+                        notify({
+                            type: 'success',
+                            title: 'successfully updated todo status'
+                        });
+                    }
+                else{
+                    notify({
+                        type: "error",
+                        title: "Server error",
+                        text: "An error occured while removing todo: " + data.errorInfo
+                    });
+                }
+            }
+            else {
+                notify({
+                    type: "error",
+                    title: "Server error",
+                    text: "An error occured while updating todo: " + response.status
+                });
+            }
+        }
+        await settings.postMethodAsync(url, headers,null, callback);
+    }
+
+    const bodyRowClassNameFunction: BodyRowClassNameFunction = (item: Item): string => {
+        if(item?.isComplete)
+            return 'completed-row'
+        else
+            return 'non-completed-row'
+    }
     //#endregion
 
 </script>
@@ -244,13 +305,21 @@
                 </select>
             </div>
             <div class="row col-12">
-                <div class="col-6">
-                    <div class="input-group col-md-4 py-2">
+                <div class="row col-6">
+                    <div class="input-group col-md-4 py-2" style="max-width: 65%;">
                           <input class="form-control input-group-prepend border-right-0 border" v-model="_todoSearch" type="search">
                           <span class="input-group-append">
                                 <div class="input-group-text bg-transparent" style="height: 100%;"><magnify class="table-icon"/></div>
-                            </span>
+                        </span>
                     </div>
+                    <div class="row col-4">
+                        <span class="col-6"> Hide completed </span>
+                        <div class="switch col-auto">
+                            <input id="toggle-complete" type="checkbox" class="switch-input">
+                            <label for="toggle-complete" class="switch-label" @click="onHideCompletedClicked($event)"></label>
+                        </div>
+                    </div>
+                    
                 </div>
                 <div class="col-6 btn-row">
                     <!-- <button class="btn btn-info">Load todos</button> -->
@@ -264,7 +333,8 @@
                 :items="items"
                 alternating  
                 @click-row="onRowClicked"
-                :search-value="_todoSearch"             
+                :search-value="_todoSearch"
+                :body-row-class-name="bodyRowClassNameFunction"             
                 >
                     <template #item-id="item">
                         <input type="radio" :id="item?.id"/>
@@ -275,8 +345,11 @@
                     </template>
                     
                     <template #item-isComplete="item">
-                        <span v-if="item.isComplete"><check-bold class="table-icon success-color"/></span>
-                        <span v-else><close-thick class="table-icon danger-color"/></span>
+                        <div @click="onCellClicked($event)">
+                            <span v-if="item.isComplete"><check-bold class="table-icon success-color"/></span>
+                            <span v-else><close-thick class="table-icon danger-color"/></span>
+                        </div>
+                        
                     </template>
                 </EasyDataTable>
             </div>
@@ -305,5 +378,73 @@
 
 #usersSelect{
     max-width: 400px;
+}
+
+
+
+/* Switch Container */
+.switch {
+  position: relative;
+  display: inline-block;
+}
+
+/* Hide the checkbox input (only needed for `:checked` property) */
+.switch-input {
+  display: none;
+}
+
+/* Switch */
+.switch-label {
+  display: block;
+  width: 48px;
+  height: 24px;
+  text-indent: -150%;
+  clip: rect(0 0 0 0);
+  color: transparent;
+  user-select: none;
+  margin-top: 10px;
+  
+  /* Switch Rail & Knob */
+  &:before,
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    cursor: pointer;
+  }
+  
+  /* Switch Rail */
+  &:before {
+    width: 48px;
+    height: 24px;
+    background-color: #dedede;
+    border-radius: 9999em;
+    transition: background-color 250ms ease;
+  }
+  
+  /* Switch Knob */
+  &:after {
+    top: 10px;
+    /* left: 0; */
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.45);;
+    transition: left 250ms ease;
+  }
+}
+
+/* When input is checked */
+.switch-input:checked + .switch-label {
+  /* Switch Rail */
+  &:before {
+    background-color: #89c12d;
+  }
+  
+  /* Switch Knob */
+  &:after {
+    left: 36px;
+  }
 }
 </style>
