@@ -3,9 +3,11 @@
     import {ref, reactive, onMounted, computed} from 'vue';
     import settings from '@/requestSettings.js';
     import AddTodoItem from '@/components/AddTodoItem.vue';
+    import SelectUserModal from '@/components/SelectUserModal.vue';
     import type { Header, Item, ClickRowArgument, BodyRowClassNameFunction } from "vue3-easy-data-table";
     import { createConfirmDialog } from 'vuejs-confirm-dialog';
     import { notify } from "@kyvg/vue3-notification";
+    import {openModal} from '@kolirt/vue-modal';
     //#endregion
 
     //#region fields
@@ -35,6 +37,22 @@
 
     const { reveal, onConfirm, onCancel } = createConfirmDialog(AddTodoItem, { question: "Do you want to add todo?", userId: _userId })
 
+    async function ChooseUser(){
+        if(!_selectedRow.value || !_selectedRow.value?.id ){
+            notify({
+                title: "Please, select todo",
+                type: 'info'
+            });
+            return;
+        }
+
+        openModal(SelectUserModal, 
+            {usersList: _users.value, todoId: _selectedRow.value?.id})
+            .then(async (data: any) => await ReloadTodos())
+            .catch((err) => {
+                console.log('An error occured while binding user and todo:' + err);
+             });
+    }
 
     //#region lifecycle hooks/ events
         onMounted(async () => {
@@ -89,6 +107,10 @@
         }
 
         const onCellClicked = async (ev: any) => {
+            if(!_userId.value){
+                return;
+            }
+
             var cellElem = <HTMLTableCellElement> ev?.currentTarget;
             if(cellElem.getElementsByClassName('check-bold-icon').length == 0){
                 var currDataInput = <HTMLElement> cellElem?.parentElement
@@ -110,13 +132,8 @@
     //#endregion
 
     //#region methods
-    async function LoadUserTodos() {
-        var url = settings.defaultSiteUrl + '/api/TodoItems/GetTodosOfUser?userId=' + _userId.value;
-        var headers = {
-        "Content-Type": "text/plain"
-        }
-        var callback = async (response: any) => {
-            if(response && response.ok){
+    const loadTodosCallback = async (response: any) => {
+        if(response && response.ok){
                 var count = 0;
                 var data = await response.json();
                 items.value = [];
@@ -151,7 +168,23 @@
                     text: "An error occured while loading data: " + response.status
                 });
             }
+    }
+
+    async function LoadUserTodos() {
+        var url = settings.defaultSiteUrl + '/api/TodoItems/GetTodosOfUser?userId=' + _userId.value;
+        var headers = {
+        "Content-Type": "text/plain"
         }
+        var callback = loadTodosCallback;
+        await settings.getMethodAsync(url, headers, callback);
+    }
+
+    async function LoadAllUnusedTodos(){
+        var url = settings.defaultSiteUrl + '/api/TodoItems/GetUnusedTodoItems';
+        var headers = {
+        "Content-Type": "text/plain"
+        }
+        var callback = loadTodosCallback;
         await settings.getMethodAsync(url, headers, callback);
     }
 
@@ -201,6 +234,7 @@
             _pageHeader.value = "Loaded todos for user: " + _userName.value;
         }
         else{
+            await LoadAllUnusedTodos();
             _pageHeader.value = "Choose a user to display his/her todos!"
         }
     }
@@ -299,6 +333,7 @@
             <div class="row mb-2">
                 <p>List of all users</p>
                 <select id="usersSelect" v-model="_userName" @change="usersSelectChange($event)" >
+                        <option>Not selected</option>
                         <option v-for="user in _users" :key="user?.id" :item-id="user?.id">
                             {{ user?.username }}
                         </option>
@@ -323,8 +358,13 @@
                 </div>
                 <div class="col-6 btn-row">
                     <!-- <button class="btn btn-info">Load todos</button> -->
-                    <button class="btn btn-danger" :disabled="_disabledBtn" @click="RemoveTodo()">Remove todo</button>
-                    <button class="btn btn-success" :disabled="_disabledBtn" @click="reveal">Add todo</button>
+                    <div v-if="_userId">
+                        <button class="btn btn-danger" :disabled="_disabledBtn" @click="RemoveTodo()">Remove todo</button>
+                        <button class="btn btn-success" :disabled="_disabledBtn" @click="reveal">Add todo</button>
+                    </div>
+                    <div v-else>
+                        <button class="btn btn-info" @click="ChooseUser()">Bind todo</button>
+                    </div>
                 </div>
             </div>
             <div class="row table-container">
